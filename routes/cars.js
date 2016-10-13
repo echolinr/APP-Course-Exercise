@@ -1,7 +1,10 @@
 /** 
  * Express Route: /cars
- * @author Clark Jeria
- * @version 0.0.3
+ * @author Lin Zhai
+ * @version 0.0.4
+ * 
+ * @Oct 13th: Add post validation for car's attributs
+ * 
  */
 var express = require('express');
 var router = express.Router();
@@ -68,9 +71,80 @@ router.route('/cars')
      * @throws Mongoose Database Error (500 Status Code)
      */
     .post(function (req, res) {
+
+
         /**
-         * Add aditional error handling here
+         * validation
          */
+        var y = 0;
+        for (var x in req.body) {
+            y++;
+            //console.log(y);
+            /**
+             * make sure attributes name are correct
+             */
+            if (x.trim() != "make" && x.trim() != "doorCount" && x.trim() != "license" && x.trim() != "model") {
+                //console.log(x.trim());
+                res.status(400).json({ "errorCode": "1003", "errorMessage": util.format("Invalid attribute '%s' for the car!", x.trim()), "statusCode": "400" });
+                return;
+            }
+
+            /**
+             * make sure no duplicate attribute
+             */
+            if (req.body[x] instanceof Array) {
+                res.status(400).json({ "errorCode": "1004", "errorMessage": util.format("Duplicate attribute for '%s' of the car!", x), "statusCode": "400" });
+                return;
+            }
+
+            /** 
+             * make sure no empty value
+             */
+            if (req.body[x] == "") {
+                res.status(400).json({ "errorCode": "1005", "errorMessage": util.format("Missing attribute value! Please provide a value for '%s' of the car!", x), "statusCode": "400" });
+                return;
+            } else {
+                /**
+                 * make sure value in valide range
+                 */
+                if (x.trim() == "make" && req.body.make.trim().length > 8) {
+                    console.log(x.trim());
+                    res.status(400).json({ "errorCode": "1006", "errorMessage": util.format("Length is greater than 8 for '%s' of the car!", x), "statusCode": "400" });
+                    return;
+                }
+
+                if (x.trim() == "model" && req.body.model.trim().length > 18) {
+                    console.log(x.trim());
+                    res.status(400).json({ "errorCode": "1007", "errorMessage": util.format("Length is greater than 18 for '%s' of the car!", x), "statusCode": "400" });
+                    return;
+                }
+
+                if (x.trim() == "license" && req.body.license.trim().length > 10) {
+                    console.log(x.trim());
+                    res.status(400).json({ "errorCode": "1008", "errorMessage": util.format("Length is greater than 10 for '%s' of the car!", x), "statusCode": "400" });
+                    return;
+                }
+
+                if (x.trim() == "doorCount" && (Number(req.body.doorCount) < 1 || Number(req.body.doorCount) > 8)) {
+                    console.log(x.trim());
+                    res.status(400).json({ "errorCode": "1009", "errorMessage": util.format("Invalide %d  for '%s' of the car!", Number(req.body.doorCount), x), "statusCode": "400" });
+                    return;
+                }
+
+            }
+
+
+        }
+
+        /**
+         * make sure all attributs are there
+         */
+        if (y != 4) {
+            res.status(400).json({ "errorCode": "1006", "errorMessage": util.format("Not enough attributes!"), "statusCode": "400" });
+            return;
+        }
+
+
         var car = new Car();
         car.license = req.body.license;
         car.doorCount = req.body.doorCount;

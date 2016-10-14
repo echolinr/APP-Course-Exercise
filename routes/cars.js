@@ -81,12 +81,12 @@ router.route('/cars')
         var y = 0;
         for (var x in req.body) {
             y++;
-            //console.log(y);
+            console.log(y+req.body[x].trim());
             /**
              * make sure attributes name are correct
              */
             if (x.trim() != "make" && x.trim() != "doorCount" && x.trim() != "license" && x.trim() != "model") {
-                //console.log(x.trim());
+                console.log(x.trim());
                 res.status(400).json({ "errorCode": "1003", "errorMessage": util.format("Invalid attribute '%s' for the car!", x.trim()), "statusCode": "400" });
                 return;
             }

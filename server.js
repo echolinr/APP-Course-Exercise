@@ -1,21 +1,30 @@
 /** 
  * Example of RESTful API using Express and NodeJS
- * @author Clark Jeria
- * @version 0.0.2
+ * @author Lin Zhai
+ * @version 0.0.3
+ * 
+ * @Oct 13rd, add authentication to middleware
+ * 
  */
 
 /** BEGIN: Express Server Configuration */
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var morgan      = require('morgan');
+/**
+ * get config
+ */
+var config = require('./config'); // get our config file
 
+// use body parser so we can get info from POST and/or URL parameters
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;
-
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://app_user:password@ds035826.mlab.com:35826/cmu_sv_app');
+mongoose.connect(config.database); //connect to database
+app.set('superSecret',config.secret); //secret variable
 /** END: Express Server Configuration */
 
 /** BEGIN: Express Routes Definition */
@@ -25,43 +34,50 @@ var drivers = require('./routes/drivers');
 var passengers = require('./routes/passengers');
 var paymentAccounts = require('./routes/paymentaccounts');
 var rides = require('./routes/rides');
-// var sessions = require('./routes/sessions');
+var sessions = require('./routes/sessions');
+var users = require('./routes/users');
 
-//app.use('/api', sessions);
+
 app.use('/api', cars);
 app.use('/api', drivers);
 app.use('/api', passengers);
 app.use('/api', paymentAccounts);
 app.use('/api', rides);
 app.use('/api', router);
+app.use('/api', sessions);
+app.use('/api', users);
 
-app.use(function (req, res, next) {
-  headers = JSON.stringify(req.headers);
-  headers = JSON.parse(headers)
-  console.log(headers);
 
-  if (req.path != 'sessions') {
-    if (headers.token != 'undefined') {
-      res.status(404).json({ "errorCode": "1012", "errorMessage": "Missing token", "statusCode": "404" });
-      return;
-    } else {
-      cryptedHash = base64.decode(header.token);
-      uncryptedHash = CryptoJS.AES.decrypt(cryptedHash, "Secret").toString();
+// use morgan to log requests to the console
+app.use(morgan('dev'));
 
-      try {
-        clearString = ""; //split before ;
-
-        expiration = ""; //split after;
-      } catch (error) {
-        res.status(404).json({ "errorCode": "1012", "errorMessage": "Expired token", "statusCode": "404" });
-        return;
-      }
-    }
-  }
-  next();
-  //res.status(404).json({"errorCode": "1012", "errorMessage" : "Invalid Resource Name", "statusCode" : "404"});  
+/** ======================= */
+/** routes ================ */
+/** ======================= */
+/** basic route */
+app.get('/', function(req, res) {
+    res.send('Hello! The API is at http://localhost:' + port + '/api');
 });
-/** END: Express Routes Definition */
+
+/** API ROUTES ------------------- */
+/** Setup a sample user */
+app.get('/setup', function(req, res) {
+
+  // create a sample user
+  var nick = new User({ 
+    name: 'Lin Zhai', 
+    password: 'ilovecmu',
+    admin: true 
+  });
+
+  // save the sample user
+  nick.save(function(err) {
+    if (err) throw err;
+
+    console.log('User saved successfully');
+    res.json({ success: true });
+  });
+});
 
 /** BEGIN: Express Server Start */
 app.listen(port);

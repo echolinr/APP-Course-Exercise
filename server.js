@@ -80,7 +80,7 @@ app.get('/setup', function(req, res) {
   // save the sample user
   nick.save(function(err) {
     if (err) {
-      console.log(nick.password);
+      //console.log(nick.password);
        throw err;
     }
 

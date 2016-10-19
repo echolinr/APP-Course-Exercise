@@ -1,7 +1,7 @@
 /** 
  * Express Route: /passengers
- * @author Clark Jeria
- * @version 0.0.3
+ * @author Lin Zhai
+ * @version 0.0.1
  */
 var express = require('express');
 var router = express.Router();
@@ -10,31 +10,8 @@ var mongoose     = require('mongoose');
 
 
 var Passenger = require('../app/models/passenger');
-
-function reportErrorByType(errType, errMsg, res) {
-    switch(errType) {
-        // not found
-        case 'ObjectId':
-            res.status(404).json({message: errMsg, errorCode: 1001}).end();
-            return;
-        // longer than maxlength
-        case 'maxlength':
-            res.status(400).json({message: errMsg, errorCode: 1002}).end();
-            return;
-        // shorter than minlength
-        case 'minlength':
-            res.status(400).json({message: errMsg, errorCode: 1002}).end();
-            return;
-        // missing params
-        case 'required':
-            res.status(400).json({message: errMsg, errorCode: 1003}).end();
-            return;
-        // uncaught error type
-        default:
-            res.status(400).json({message: errMsg, errorCode: 1004}).end();
-            return;
-    }
-}
+var CF = require('./commonfunc');
+var newError = new Error();
 
 
 router.route('/passengers') 
@@ -50,9 +27,6 @@ router.route('/passengers')
         Passenger.find(function(err, passengers){
             if(err){
                 res.status(500).send(err);
-                /**
-                 * Wrap this error into a more comprehensive message for the end-user
-                 */
             }else{
                 res.json(passengers);
             }
@@ -80,11 +54,10 @@ router.route('/passengers')
             return;
 
         }
-        /**
-         * Add aditional error handling here
-         */
 
-        var passenger = new Passenger();
+
+        var passenger = new Passenger(req.body);
+        /*
         passenger.firstName = req.body.firstName;
         passenger.lastName = req.body.lastName;
         passenger.username = req.body.username;
@@ -96,7 +69,7 @@ router.route('/passengers')
         passenger.state = req.body.state;
         passenger.zip = req.body.zip;
         passenger.phoneNumber = req.body.phoneNumber;
-
+        */ 
         passenger.save(function(err){
             if(err){
                 res.status(500).send(err);
@@ -132,7 +105,6 @@ router.route('/passengers/:passenger_id')
             }else{
                 if (!passenger)
                     res.status(404).send({});
-
                 else
                 res.json(passenger);
             }
@@ -162,26 +134,18 @@ router.route('/passengers/:passenger_id')
             if(err){
                 res.status(500).send(err);
             }else{
+                /**
+                 * update attributes
+                 */
                 for(var key in req.body) {
                     if(req.body.hasOwnProperty(key)){
-                        if(key == 'firstName'){
-                            /**
-                             * Add extra error handling rules here
-                             */
-                            passenger.firstName = req.body.firstName;
-                        }
-                        if(key == 'lastName'){
-                            /**
-                             * Add extra error handling rules here
-                             */
-                            passenger.lastName = req.body.lastName;
-                        }
-                        /**
-                         * Repeat for the other properties
-                         */
+                        passenger[key] = req.body[key];
                     }
                 }
 
+                /**
+                 * save to db
+                 */
                 passenger.save(function(err){
                     if(err){
                         res.status(500).send(err);

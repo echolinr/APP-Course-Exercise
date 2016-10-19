@@ -1,3 +1,12 @@
+/** 
+ * @author Lin Zhai
+ * @version 0.0.4
+ * 
+ * @Oct 17th: global configuration for app.
+ * 
+ * 
+ */
+
 module.exports = {
 
 	'secret': 'uberisgreat',

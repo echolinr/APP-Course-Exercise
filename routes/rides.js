@@ -1,7 +1,9 @@
 /** 
  * Express Route: /rides
- * @author Clark Jeria
- * @version 0.0.3
+ * @author Lin Zhai
+ * @version 0.0.2
+ * 
+ * @Oct 19th, add methods according project requirement and code review feedback
  */
 var express = require('express');
 var router = express.Router();
@@ -11,31 +13,8 @@ var mongoose = require('mongoose');
 
 
 var Ride = require('../app/models/ride');
-
-function reportErrorByType(errType, errMsg, res) {
-    switch (errType) {
-        // not found
-        case 'ObjectId':
-            res.status(404).json({ message: errMsg, errorCode: 1001 }).end();
-            return;
-        // longer than maxlength
-        case 'maxlength':
-            res.status(400).json({ message: errMsg, errorCode: 1002 }).end();
-            return;
-        // shorter than minlength
-        case 'minlength':
-            res.status(400).json({ message: errMsg, errorCode: 1002 }).end();
-            return;
-        // missing params
-        case 'required':
-            res.status(400).json({ message: errMsg, errorCode: 1003 }).end();
-            return;
-        // uncaught error type
-        default:
-            res.status(400).json({ message: errMsg, errorCode: 1004 }).end();
-            return;
-    }
-}
+var CF = require('./commonfunc');
+var newError = new Error();
 
 router.route('/rides')
     /**
@@ -44,15 +23,14 @@ router.route('/rides')
      * @throws Mongoose Database Error (500 Status Code)
      */
     .get(function (req, res) {
-        /**
-         * Add extra error handling rules here
-         */
+    /**
+     * GET call for the ride entity (multiple).
+     * @returns {object} A list of ridess. (200 Status Code)
+     * @throws Mongoose Database Error (500 Status Code)
+     */
         Ride.find(function (err, rides) {
             if (err) {
                 res.status(500).send(err);
-                /**
-                 * Wrap this error into a more comprehensive message for the end-user
-                 */
             } else {
                 res.json(rides);
             }
@@ -71,24 +49,21 @@ router.route('/rides')
         /**
          * Add aditional error handling here
          */
-        var ride = new Ride();
-        ride.license = req.body.license;
-        ride.doorCount = req.body.doorCount;
-        ride.make = req.body.make;
-        ride.model = req.body.model;
+        var ride = new Ride(req.body);
 
         ride.save(function (err) {
             if (err) {
                 if (err.errors) {
-                    var curErr = err.errors
                     var curErr = err.errors;
                     for (var key in curErr) {
-                        // only report once
-                        reportErrorByType(curErr[key].kind, curErr[key].message, res);
+                        /**
+                         * just report once
+                         */
+                        CF.reportErrorByType(curErr[key].kind, curErr[key].message, res);
                         break;
                     }
                 } else if (err.kind) {
-                    reportErrorByType(err.kind, err.message, res);
+                    CF.reportErrorByType(err.kind, err.message, res);
                 }
             } else {
                 res.status(201).json(ride);
@@ -100,15 +75,16 @@ router.route('/rides')
  * Express Route: /rides/:ride_id
  * @param {string} ride_id - Id Hash of Ride Object
  */
-router.route('/rides/:ride_id')
+router.route('/rides/:ride_id') 
     /**
      * GET call for the ride entity (single).
      * @returns {object} the ride with Id ride_id. (200 Status Code)
      * @throws Mongoose Database Error (500 Status Code)
      */
     .get(function (req, res) {
+
         /**
-         * Add extra error handling rules here
+         * test id
          */
         if (!mongoose.Types.ObjectId.isValid(req.params.ride_id)) {
             res.status(404).send({ errorCode: 4000 });
@@ -120,12 +96,14 @@ router.route('/rides/:ride_id')
                 if (err.errors) {
                     var curErr = err.errors
                     for (var key in curErr) {
-                        // only report once
-                        reportErrorByType(curErr.kind, curErr.message, res);
+                        /**
+                         * just report once
+                         */
+                        CF.reportErrorByType(curErr.kind, curErr.message, res);
                         break;
                     }
                 } else if (err.kind) {
-                    reportErrorByType(err.kind, err.msg, res);
+                    CF.reportErrorByType(err.kind, err.msg, res);
                 }
             } else {
                 if (!ride)
@@ -145,34 +123,52 @@ router.route('/rides/:ride_id')
      * @throws Mongoose Database Error (500 Status Code)
      */
     .patch(function (req, res) {
+
         /**
-         * Add extra error handling rules here
+         * test id
          */
+        if (!mongoose.Types.ObjectId.isValid(req.params.ride_id)) {
+            res.status(404).send({ errorCode: 4000 });
+            return;
+        }
 
         Ride.findById(req.params.ride_id, function (err, ride) {
             if (err) {
                 if (err.errors) {
                     var curErr = err.errors
                     for (var key in curErr) {
-                        // only report once
-                        reportErrorByType(curErr.kind, curErr.message, res);
+                        /**
+                         * just report once
+                         */
+                        CF.reportErrorByType(curErr.kind, curErr.message, res);
                         break;
                     }
                 } else if (err.kind) {
-                    reportErrorByType(err.kind, err.msg, res);
+                    CF.reportErrorByType(err.kind, err.msg, res);
                 }
             } else {
+                /**
+                 * find one entry, update the attributes
+                 */
+                for (var attribute in req.body) {
+                    ride[attribute] = req.body[attribute];
+                }
+                /**
+                 * save the entry and catch error.
+                 */
                 ride.save(function (err) {
                     if (err) {
                         if (err.errors) {
                             var curErr = err.errors
                             for (var key in curErr) {
-                                // only report once
-                                reportErrorByType(curErr.kind, curErr.message, res);
+                        /**
+                         * just report once
+                         */
+                                CF.reportErrorByType(curErr.kind, curErr.message, res);
                                 break;
                             }
                         } else if (err.kind) {
-                            reportErrorByType(err.kind, err.msg, res);
+                            CF.reportErrorByType(err.kind, err.msg, res);
                         }
                     } else {
                         res.json(ride);
@@ -187,9 +183,15 @@ router.route('/rides/:ride_id')
      * @throws Mongoose Database Error (500 Status Code)
      */
     .delete(function (req, res) {
+
         /**
-         * Add extra error handling rules here
+         * test id
          */
+        if (!mongoose.Types.ObjectId.isValid(req.params.ride_id)) {
+            res.status(404).send({ errorCode: 4000 });
+            return;
+        }
+
         Ride.remove({
             _id: req.params.ride_id
         }, function (err, ride) {
@@ -198,15 +200,97 @@ router.route('/rides/:ride_id')
                     var curErr = err.errors
                     for (var key in curErr) {
                         // only report once
-                        reportErrorByType(curErr.kind, curErr.message, res);
+                        CF.reportErrorByType(curErr.kind, curErr.message, res);
                         break;
                     }
                 } else if (err.kind) {
-                    reportErrorByType(err.kind, err.msg, res);
+                    CF.reportErrorByType(err.kind, err.msg, res);
                 }
             } else {
                 res.json({ "message": "Ride Deleted" });
             }
+        });
+    });
+
+
+/**
+ * Here you must add the routes for the Ride entity
+ * /rides/:id/routePoints (POST)
+ * /rides/:id/routePoints (GET)
+ * /rides/:id/routePoint/current (GET)
+ */
+router.route('/rides/:ride_id/routePoints')
+    /**
+     * GET call for the ride entity (single).
+     * @returns {object} the ride with Id ride_id. (200 Status Code)
+     * @throws Mongoose Database Error (500 Status Code)
+     */
+    .get(function (req, res) {
+
+        /**
+         * test id
+         */
+        if (!mongoose.Types.ObjectId.isValid(req.params.ride_id)) {
+            res.status(404).send({ errorCode: 4000 });
+            return;
+        }
+
+        Ride.findById(req.params.ride_id, function (err, ride) {
+            if (err) {
+                if (err.errors) {
+                    var curErr = err.errors
+                    for (var key in curErr) {
+                        /**
+                         * just report once
+                             */
+                        CF.reportErrorByType(curErr.kind, curErr.message, res);
+                        break;
+                    }
+                } else if (err.kind) {
+                    CF.reportErrorByType(err.kind, err.msg, res);
+                }
+            } else {
+                if (!ride)
+                    res.sendStatus(404);
+                else
+                    res.json(ride);
+            }
+        });
+    })
+
+
+    .post(function(req, res) {
+        Ride.findById(req.params.ride_id, function(err, ride){
+            if(err) {
+                CF.reportErrorByType(err.kind, err.msg, res);
+            } else {
+                ride.points = req.body;
+                ride.save(function(err){
+                    if(err){
+                        CF.reportErrorByType(err.kind, err.message, res);
+                        return;
+                    } else {
+                        res.json(ride);
+                    }
+                });
+            };
+        });
+    });
+
+router.route('/rides/:ride_id/routePoints/current')
+    /**
+     * GET call for the ride entity (single).
+     * @returns {object} the ride with Id ride_id. (200 Status Code)
+     * @throws Mongoose Database Error (500 Status Code)
+     */
+    .get(function(req, res){
+        Ride.findById(req.params.ride_id, function(err, ride){
+            if(err){
+                CF.reportErrorByType(err.kind, err.message, res);
+            } else {
+                var current = ride.route.slice(-1)[0];
+                res.json(current);
+            };
         });
     });
 

@@ -1,6 +1,6 @@
 /** 
  * Express Route: /
- * @author Clark Jeria
+ * @author Lin Zhai
  * @version 0.0.2
  */
 var express = require('express');

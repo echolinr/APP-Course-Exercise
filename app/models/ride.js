@@ -1,7 +1,9 @@
 /** 
  * Mongoose Schema for the Entity Ride
- * @author Clark Jeria
- * @version 0.0.3
+ * @author Lin Zhai
+ * @version 0.0.1
+ * 
+ * @ Oct 17th. add comments according review feedback. Definition of ride schema.
  */
 
 var mongoose     = require('mongoose');
@@ -22,14 +24,32 @@ var RideSchema   = new Schema({
             type: 'notvalid'
         }]
     },
-    startPoint: {type: Number},
-    endPoint: {type: Number}, 
-    requestTime: {type: Date},
-    pickupTime: {type: Date},
-    dropOffTime: {type: Date},
-    status : ['REQUESTED', 'AWAITING_DRIVER', 'DRIVE_ASSIGNED', 'IN_PROGRESS', 'ARRIVED', 'CLOSED'],
-    fare: {type: Number},
-    route:{type: Number}
+    startPoint: {
+        lattitude: {
+            type: Number,
+            required: true
+        },
+        longitude:{
+            type: Number,
+            required: true
+        }
+    },
+    endPoint: {
+        lattitude: {
+            type: Number,
+            required: true
+        },
+        longitude:{
+            type: Number,
+            required: true
+        }
+    }, 
+    requestTime: {type: Date, required: true},
+    pickupTime: {type: Date, required: true},
+    dropOffTime: {type: Date, required: true},
+    status : {type: String, enum:['REQUESTED', 'AWAITING_DRIVER', 'DRIVE_ASSIGNED', 'IN_PROGRESS', 'ARRIVED', 'CLOSED'], required: true},
+    fare: {type: Number, required: true},
+    route:{points:[{}]}
 });
 
 module.exports = mongoose.model('Ride', RideSchema);

@@ -1,7 +1,10 @@
 /** 
  * Mongoose Schema for the Entity Passenger
- * @author Clark Jeria
- * @version 0.0.3
+ * @author Lin Zhai
+ * @version 0.0.1
+ * 
+ * @ Oct 17th. add comments according review feedback. Definition of Passenger schema.
+ * 
  */
 
 var mongoose     = require('mongoose');

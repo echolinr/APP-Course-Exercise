@@ -1,7 +1,10 @@
 /** 
  * Mongoose Schema for the Entity Car
- * @author Clark Jeria
- * @version 0.0.3
+ * @author Lin Zhai
+ * @version 0.0.1
+ * 
+ * @Oct. 17th : add comments according review feedback, define car Schema
+ * 
  */
 
 var mongoose     = require('mongoose');

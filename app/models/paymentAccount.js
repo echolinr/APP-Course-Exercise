@@ -2,6 +2,8 @@
  * Mongoose Schema for the Entity PaymentAccount
  * @author Clark Jeria
  * @version 0.0.1
+ * 
+ * @ Oct 17th. add comments according review feedback. Definition of payment account of a user schema.
  */
 
 var mongoose     = require('mongoose');

@@ -1,38 +1,13 @@
 /** 
  * Express Route: /paymentaccounts
- * @author Clark Jeria
- * @version 0.0.3
+ * @author Lin Zhai
+ * @version 0.0.1
  */
 var express = require('express');
 var router = express.Router();
 var util = require('util');
 
 var PaymentAccount = require('../app/models/paymentaccount');
-
-function reportErrorByType(errType, errMsg, res) {
-    switch(errType) {
-        // not found
-        case 'ObjectId':
-            res.status(404).json({message: errMsg, errorCode: 1001}).end();
-            return;
-        // longer than maxlength
-        case 'maxlength':
-            res.status(400).json({message: errMsg, errorCode: 1002}).end();
-            return;
-        // shorter than minlength
-        case 'minlength':
-            res.status(400).json({message: errMsg, errorCode: 1002}).end();
-            return;
-        // missing params
-        case 'required':
-            res.status(400).json({message: errMsg, errorCode: 1003}).end();
-            return;
-        // uncaught error type
-        default:
-            res.status(400).json({message: errMsg, errorCode: 1004}).end();
-            return;
-    }
-}
 
 router.route('/paymentaccounts') 
     /**

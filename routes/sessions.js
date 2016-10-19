@@ -49,8 +49,8 @@ router.route('/sessions')
                  * verifying password
                  */
                 var hashedPassword = CryptoJS.HmacSHA1(req.body.password, "ilovecmu").toString();
-                console.log("hased password:"+hashedPassword);
-                console.log("stored password:"+user.password);
+                //console.log("hased password:"+hashedPassword);
+                //console.log("stored password:"+user.password);
                 if (hashedPassword != user.password) {
                     res.status(400).json({
                         "errorCode": 1100, 

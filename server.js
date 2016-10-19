@@ -12,6 +12,7 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var morgan      = require('morgan');
+var CryptoJS = require("crypto-js");
 /**
  * get config
  */
@@ -36,6 +37,8 @@ var paymentAccounts = require('./routes/paymentaccounts');
 var rides = require('./routes/rides');
 var sessions = require('./routes/sessions');
 var users = require('./routes/users');
+
+var User   = require('./app/models/user'); // get our mongoose model
 
 
 app.use('/api', cars);
@@ -65,14 +68,21 @@ app.get('/setup', function(req, res) {
 
   // create a sample user
   var nick = new User({ 
-    name: 'Lin Zhai', 
-    password: 'ilovecmu',
+    name: "uttester", 
+//    password : "ilovecmu",
     admin: true 
   });
 
+  /**
+   * hash password
+   */
+  nick.password = CryptoJS.HmacSHA1("ilovecmu", "ilovecmu").toString();
   // save the sample user
   nick.save(function(err) {
-    if (err) throw err;
+    if (err) {
+      console.log(nick.password);
+       throw err;
+    }
 
     console.log('User saved successfully');
     res.json({ success: true });

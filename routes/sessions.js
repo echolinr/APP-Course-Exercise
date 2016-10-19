@@ -9,6 +9,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var CryptoJS = require("crypto-js"); // used to store user password
 var config = require('../config'); // get our config file
 var User   = require('../app/models/user'); // get our mongoose model
 
@@ -47,8 +48,10 @@ router.route('/sessions')
                 /**
                  * verifying password
                  */
-                //console.log(user.password+":"+req.body.password);
-                if (req.body.password != user.password) {
+                var hashedPassword = CryptoJS.HmacSHA1(req.body.password, "ilovecmu").toString();
+                console.log("hased password:"+hashedPassword);
+                console.log("stored password:"+user.password);
+                if (hashedPassword != user.password) {
                     res.status(400).json({
                         "errorCode": 1100, 
                         "errorMsg": "Authentication failed！Please check username/password.",
@@ -83,7 +86,9 @@ router.use(function(req, res, next) {
     /**
      * check header or url parameters or post parameters for token
      */
-	var token = req.body.token || req.param('token') || req.headers['x-access-token'];
+	var token = ((req.body && req.body.token) ||
+                 (req.query && req.query.token) ||
+                 (req.headers['x-access-token']));
 	
     /**
      * decode a token
@@ -96,7 +101,7 @@ router.use(function(req, res, next) {
 			if (err) {
                 return res.status(400).json({
                     "errorCode": 1100, 
-                    "errorMsg": "Authentication failed！Please check username/password.",
+                    "errorMsg": "Invalid token",
                     "statusCode": 404,
                     "statusTxt": "Bad Request"
                 }).end();
@@ -112,8 +117,8 @@ router.use(function(req, res, next) {
          * Missing token, return error
          */
         return res.status(400).json({
-             "errorCode": 1100, 
-             "errorMsg": "Authentication failed！Please check username/password.",
+             "errorCode": 1101, 
+             "errorMsg": "Invalid token",
              "statusCode": 404,
              "statusTxt": "Bad Request"
          }).end();

@@ -9,3 +9,5 @@ Error Code  | Error Message    | Relevant Resources  | Parameters
 1006 | Not valid value | All Resources | None
 1007 | Not enough objects | All Resources | None
 1009 | Uncaught error| All Resources | None
+1100 | Authentication failed！Please check username/password. | sessions | None
+1101 | Invalid token | sessions | None

@@ -108,6 +108,7 @@ router.route('/drivers')
                     //console.log(x.trim());
                     newError.errType ='maxlength';
                     newError.errMsg = util.format("Length is greater than maximum allowed.");
+                    //newError.errMsg = util.format("%s Length is greater than maximum allowed.",x);
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
                     return;
                 }
@@ -124,22 +125,24 @@ router.route('/drivers')
                     //console.log(x.trim());
                     newError.errType ='maxlength';
                     newError.errMsg = util.format("Length is greater than maximum allowed.");
+                    //newError.errMsg = util.format("%s Length is greater than maximum allowed.",x);
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
                     return;
                 }
                 driver.lastName = req.body.lastName;
             }
             if (x.trim() == "licensedState") {
-                if (req.body.lastName.trim().length != 2) {
+                if (req.body.licensedState.trim().length != 2) {
                     newError.errType ='notvalid';
-                    newError.errMsg = util.format("Not valid value");
+                    //newError.errMsg = util.format("Not valid value");
+                    newError.errMsg = util.format("%s Not valid value", x);
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
                     return;
                 } 
                 driver.licensedState = req.body.licensedState;
             }
             if (x.trim() == "drivingLicense") {
-                if (req.body.drivingLicense.trim().length < 8) {
+                if (req.body.drivingLicense.trim().length < 6) {
                     newError.errType ='minlength';
                     newError.errMsg = util.format("Length is shorter than minimum allowed.");
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
@@ -149,12 +152,13 @@ router.route('/drivers')
                     //console.log(x.trim());
                     newError.errType ='maxlength';
                     newError.errMsg = util.format("Length is greater than maximum allowed.");
+                    //newError.errMsg = util.format("%s Length is greater than maximum allowed.",x);
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
                     return;
                 }
                 driver.drivingLicense = req.body.drivingLicense;                
             }
-            if (x.trim() == "phoneNumber") {
+            if (x.trim() == "phoneNumber") {    
                 var regEx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
                 /**
                  * make sure its format and value
@@ -162,23 +166,25 @@ router.route('/drivers')
                 if (!regEx.test(req.body.phoneNumber)) {
                    newError.errType ='notvalid';
                     newError.errMsg = util.format("Not valid value");
+                    //newError.errMsg = util.format("%s Not valid value", x);
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
                     return;
                 } 
                 driver.phoneNumber = req.body.phoneNumber;
             }
             if (x.trim() == "emailAddress") {
-               var regEx = /[a-zA-Z0-9_.]+\@[a-zA-Z](([a-zA-Z0-9-]+).)*/;
+               var regEx = /[a-zA-Z0-9_.\-]+\@[a-zA-Z](([a-zA-Z0-9-]+).)*/;
                 /**
                  * make sure its format and value
                  */
                 if (!regEx.test(req.body.emailAddress)) {
                    newError.errType ='notvalid';
                     newError.errMsg = util.format("Not valid value");
+                    //newError.errMsg = util.format("%s Not valid value", x);
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
                     return;
                 } 
-                driver.phoneNumber = req.body.emailAddress; 
+                driver.emailAddress = req.body.emailAddress; 
             }
             if (x.trim() == "password") {
                 if (req.body.password.trim().length < 6) {
@@ -191,6 +197,7 @@ router.route('/drivers')
                     //console.log(x.trim());
                     newError.errType ='maxlength';
                     newError.errMsg = util.format("Length is greater than maximum allowed.");
+                    //newError.errMsg = util.format("%s Length is greater than maximum allowed.",x);
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
                     return;
                 }
@@ -205,46 +212,51 @@ router.route('/drivers')
                     //console.log(x.trim());
                     newError.errType ='maxlength';
                     newError.errMsg = util.format("Length is greater than maximum allowed.");
+                    //newError.errMsg = util.format("%s Length is greater than maximum allowed.",x);
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
                     return;
                 }
                 driver.addressLine1 = req.body.addressLine1;   
             }             
             if (x.trim() == "addressLine2") {
-                if (req.body.addressLine1.trim().length > 50) {
+                if (req.body.addressLine2.trim().length > 50) {
                     //console.log(x.trim());
                     newError.errType ='maxlength';
                     newError.errMsg = util.format("Length is greater than maximum allowed.");
+                    //newError.errMsg = util.format("%s Length is greater than maximum allowed.",x);
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
                     return;
                 }
                 driver.addressLine2 = req.body.addressLine2;   
             }             
             if (x.trim() == "city") {
-                if (req.body.addressLine1.trim().length > 50) {
+                if (req.body.city.trim().length > 50) {
                     //console.log(x.trim());
                     newError.errType ='maxlength';
                     newError.errMsg = util.format("Length is greater than maximum allowed.");
+                    //newError.errMsg = util.format("%s Length is greater than maximum allowed.",x);
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
                     return;
                 }
                 driver.city = req.body.city;   
             }             
             if (x.trim() == "state") {
-                if (req.body.addressLine1.trim().length > 2) {
+                if (req.body.state.trim().length > 2) {
                     //console.log(x.trim());
                     newError.errType ='maxlength';
                     newError.errMsg = util.format("Length is greater than maximum allowed.");
+                    //newError.errMsg = util.format("%s Length is greater than maximum allowed.",x);
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
                     return;
                 }
                 driver.state = req.body.state;   
             }             
             if (x.trim() == "zip") {
-                if (req.body.addressLine1.trim().length > 2) {
+                if (req.body.zip.trim().length > 5) {
                     //console.log(x.trim());
                     newError.errType ='maxlength';
                     newError.errMsg = util.format("Length is greater than maximum allowed.");
+                    //newError.errMsg = util.format("%s Length is greater than maximum allowed.",x);
                     CF.reportErrorByType(newError.errType, newError.errMsg, res);
                     return;
                 }
@@ -355,6 +367,7 @@ router.route('/drivers/:driver_id')
                                 //console.log(x.trim());
                                 newError.errType ='maxlength';
                                 newError.errMsg = util.format("Length is greater than maximum allowed.");
+                                //newError.errMsg = util.format("%s Length is greater than maximum allowed.",key);
                                 CF.reportErrorByType(newError.errType, newError.errMsg, res);
                                 return;
                             }
@@ -371,15 +384,17 @@ router.route('/drivers/:driver_id')
                                 //console.log(x.trim());
                                 newError.errType ='maxlength';
                                 newError.errMsg = util.format("Length is greater than maximum allowed.");
+                                //newError.errMsg = util.format("%s Length is greater than maximum allowed.",key);
                                 CF.reportErrorByType(newError.errType, newError.errMsg, res);
                                 return;
                             }
                             driver.lastName = req.body.lastName;
                         }
                         if (key == "licensedState") {
-                            if (req.body.lastName.trim().length != 2) {
+                            if (req.body.licensedState.trim().length != 2) {
                                 newError.errType ='notvalid';
                                 newError.errMsg = util.format("Not valid value");
+                                //newError.errMsg = util.format("%s Not valid value", key);
                                 CF.reportErrorByType(newError.errType, newError.errMsg, res);
                                 return;
                             } 
@@ -396,6 +411,7 @@ router.route('/drivers/:driver_id')
                                 //console.log(x.trim());
                                 newError.errType ='maxlength';
                                 newError.errMsg = util.format("Length is greater than maximum allowed.");
+                                //newError.errMsg = util.format("%s Length is greater than maximum allowed.",key);
                                 CF.reportErrorByType(newError.errType, newError.errMsg, res);
                                 return;
                             }
@@ -407,25 +423,27 @@ router.route('/drivers/:driver_id')
                              * make sure its format and value
                              */
                             if (!regEx.test(req.body.phoneNumber)) {
-                            newError.errType ='notvalid';
+                                newError.errType ='notvalid';
                                 newError.errMsg = util.format("Not valid value");
+                                //newError.errMsg = util.format("%s Not valid value", key);
                                 CF.reportErrorByType(newError.errType, newError.errMsg, res);
                                 return;
                             } 
                             driver.phoneNumber = req.body.phoneNumber;
                         }
                         if (key == "emailAddress") {
-                        var regEx = /[a-zA-Z0-9_.]+\@[a-zA-Z](([a-zA-Z0-9-]+).)*/;
+                        var regEx = /[a-zA-Z0-9_.\-]+\@[a-zA-Z](([a-zA-Z0-9-]+).)*/;
                             /**
                              * make sure its format and value
                              */
                             if (!regEx.test(req.body.emailAddress)) {
-                            newError.errType ='notvalid';
+                                newError.errType ='notvalid';
                                 newError.errMsg = util.format("Not valid value");
+                                //newError.errMsg = util.format("%s Not valid value", key);
                                 CF.reportErrorByType(newError.errType, newError.errMsg, res);
                                 return;
                             } 
-                            driver.phoneNumber = req.body.emailAddress; 
+                            driver.emailAddress = req.body.emailAddress; 
                         }
                         if (key == "password") {
                             if (req.body.password.trim().length < 6) {
@@ -438,6 +456,7 @@ router.route('/drivers/:driver_id')
                                 //console.log(key);
                                 newError.errType ='maxlength';
                                 newError.errMsg = util.format("Length is greater than maximum allowed.");
+                                //newError.errMsg = util.format("%s Length is greater than maximum allowed.",key);
                                 CF.reportErrorByType(newError.errType, newError.errMsg, res);
                                 return;
                             }
@@ -452,6 +471,7 @@ router.route('/drivers/:driver_id')
                                 //console.log(key);
                                 newError.errType ='maxlength';
                                 newError.errMsg = util.format("Length is greater than maximum allowed.");
+                                //newError.errMsg = util.format("%s Length is greater than maximum allowed.",key);
                                 CF.reportErrorByType(newError.errType, newError.errMsg, res);
                                 return;
                             }
@@ -462,36 +482,40 @@ router.route('/drivers/:driver_id')
                                 //console.log(key);
                                 newError.errType ='maxlength';
                                 newError.errMsg = util.format("Length is greater than maximum allowed.");
+                                //newError.errMsg = util.format("%s Length is greater than maximum allowed.",key);
                                 CF.reportErrorByType(newError.errType, newError.errMsg, res);
                                 return;
                             }
                             driver.addressLine2 = req.body.addressLine2;   
                         }             
                         if (key == "city") {
-                            if (req.body.addressLine1.trim().length > 50) {
+                            if (req.body.city.trim().length > 50) {
                                 //console.log(key);
                                 newError.errType ='maxlength';
                                 newError.errMsg = util.format("Length is greater than maximum allowed.");
+                                //newError.errMsg = util.format("%s Length is greater than maximum allowed.",key);
                                 CF.reportErrorByType(newError.errType, newError.errMsg, res);
                                 return;
                             }
                             driver.city = req.body.city;   
                         }             
                         if (key == "state") {
-                            if (req.body.addressLine1.trim().length > 2) {
+                            if (req.body.state.trim().length > 2) {
                                 //console.log(key);
                                 newError.errType ='maxlength';
                                 newError.errMsg = util.format("Length is greater than maximum allowed.");
+                                //newError.errMsg = util.format("%s Length is greater than maximum allowed.",key);
                                 CF.reportErrorByType(newError.errType, newError.errMsg, res);
                                 return;
                             }
                             driver.state = req.body.state;   
                         }             
                         if (key == "zip") {
-                            if (req.body.addressLine1.trim().length > 2) {
+                            if (req.body.zip.trim().length > 5) {
                                 //console.log(key);
                                 newError.errType ='maxlength';
                                 newError.errMsg = util.format("Length is greater than maximum allowed.");
+                                //newError.errMsg = util.format("%s Length is greater than maximum allowed.",key);
                                 CF.reportErrorByType(newError.errType, newError.errMsg, res);
                                 return;
                             }
